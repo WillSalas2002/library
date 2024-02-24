@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Personal Page</title>
+</head>
+<body>
+    <h1>Personal Page</h1>
+    <p th:text="${book.getTitle()} + ', ' + ${book.getAuthor()}"></p>
+    <a th:href="@{/books/{id}/edit(id=${book.getId()})}" th:text="Edit"></a>
+    <br/>
+    <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getId()})}">
+        <input type="submit" value="Delete"/>
+    </form>
+</body>
+</html>
