@@ -1,11 +1,14 @@
 package com.will.library.models;
 
 public class Book {
-    private final int id;
+    private int id;
     private String title;
     private String author;
     private int year;
     private Person owner;
+
+    public Book() {
+    }
 
     public Book(String title, String author, int year) {
         this(0, title, author, year);
@@ -20,6 +23,10 @@ public class Book {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
