@@ -1,6 +1,7 @@
 package com.will.library.contollers;
 
 import com.will.library.dao.BookDAO;
+import com.will.library.dao.PersonDAO;
 import com.will.library.models.Book;
 import com.will.library.models.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/books")
 public class BooksController {
     private final BookDAO bookDAO;
+    private final PersonDAO personDAO;
 
     @Autowired
-    public BooksController(BookDAO bookDAO) {
+    public BooksController(BookDAO bookDAO, PersonDAO personDAO) {
         this.bookDAO = bookDAO;
+        this.personDAO = personDAO;
     }
 
     @GetMapping()
@@ -42,9 +45,11 @@ public class BooksController {
     }
 
     @GetMapping("/{id}")
-    public String finById(@PathVariable("id") int id, Model model) {
+    public String finById(@PathVariable("id") int id, Model model,
+                          @ModelAttribute("modelPerson") Person person) {
         model.addAttribute("book", bookDAO.findById(id));
         model.addAttribute("ownerOfBook", bookDAO.findOwnerOfBook(id));
+        model.addAttribute("people", personDAO.findAll());
         return "books/each";
     }
 
@@ -60,9 +65,15 @@ public class BooksController {
         return "redirect:/books";
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/return/{id}")
     public String returnBook(@PathVariable("id") int bookId) {
         bookDAO.returnBook(bookId);
+        return "redirect:/books";
+    }
+
+    @PatchMapping("/assign/{id}")
+    public String assignBook(@PathVariable("id") int bookId, @ModelAttribute("modelPerson") Person person) {
+        bookDAO.assignBook(bookId, person.getId());
         return "redirect:/books";
     }
 }

@@ -11,12 +11,19 @@
     <br/>
     <div th:if="${ownerOfBook}">
         <p th:text="'The owner is: ' + ${ownerOfBook.fullName} + ', ' + ${ownerOfBook.yearOfBirth}"></p>
-        <form th:method="POST" th:action="@{/books/{id}(id = ${book.id})}">
+        <form th:method="PATCH" th:action="@{/books/return/{id}(id = ${book.id})}">
             <input type="submit" value="Return Book"/>
         </form>
     </div>
     <div th:unless="${ownerOfBook}">
         <p>The books is free.</p>
+        <form th:method="PATCH" th:action="@{/books/assign/{id}(id = ${book.id})}">
+            <label for="drop-down">Assign book to: </label>
+            <select th:object="${modelPerson}" th:field="*{id}" id="drop-down">
+                <option th:each="person: ${people}" th:value="${person.getId()}" th:text="${person.getFullName()}"></option>
+            </select>
+            <input type="submit" value="Assign"/>
+        </form>
     </div>
     <br/>
     <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getId()})}">
