@@ -1,6 +1,7 @@
 package com.will.library.dao;
 
 import com.will.library.models.Book;
+import com.will.library.models.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -37,5 +38,14 @@ public class BookDAO {
     public void save(Book book) {
         jdbcTemplate.update("INSERT INTO Book(title, author, year) VALUES (?, ?, ?)",
                 book.getTitle(), book.getAuthor(), book.getYear());
+    }
+
+    public Person findOwnerOfBook(int bookId) {
+        return jdbcTemplate.query("SELECT Person.id, Person.fullName, Person.yearOfBirth FROM Book JOIN Person ON Person.id = Book.person_id WHERE Book.id = ?",
+                new Object[]{bookId}, new PersonMapper()).stream().findAny().orElse(null);
+    }
+
+    public void returnBook(int bookId) {
+        jdbcTemplate.update("UPDATE Book SET person_id = NULL WHERE id = ?", bookId);
     }
 }

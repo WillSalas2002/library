@@ -9,6 +9,16 @@
     <p th:text="${book.getTitle()} + ', ' + ${book.getAuthor()}"></p>
     <a th:href="@{/books/{id}/edit(id=${book.getId()})}" th:text="Edit"></a>
     <br/>
+    <div th:if="${ownerOfBook}">
+        <p th:text="'The owner is: ' + ${ownerOfBook.fullName} + ', ' + ${ownerOfBook.yearOfBirth}"></p>
+        <form th:method="POST" th:action="@{/books/{id}(id = ${book.id})}">
+            <input type="submit" value="Return Book"/>
+        </form>
+    </div>
+    <div th:unless="${ownerOfBook}">
+        <p>The books is free.</p>
+    </div>
+    <br/>
     <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getId()})}">
         <input type="submit" value="Delete"/>
     </form>

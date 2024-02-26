@@ -44,6 +44,7 @@ public class BooksController {
     @GetMapping("/{id}")
     public String finById(@PathVariable("id") int id, Model model) {
         model.addAttribute("book", bookDAO.findById(id));
+        model.addAttribute("ownerOfBook", bookDAO.findOwnerOfBook(id));
         return "books/each";
     }
 
@@ -56,6 +57,12 @@ public class BooksController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") int id) {
         bookDAO.delete(id);
+        return "redirect:/books";
+    }
+
+    @PostMapping("/{id}")
+    public String returnBook(@PathVariable("id") int bookId) {
+        bookDAO.returnBook(bookId);
         return "redirect:/books";
     }
 }
