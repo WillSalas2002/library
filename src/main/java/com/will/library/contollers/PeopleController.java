@@ -1,11 +1,14 @@
 package com.will.library.contollers;
 
 import com.will.library.dao.PersonDAO;
+import com.will.library.models.Book;
 import com.will.library.models.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/people")
@@ -44,6 +47,7 @@ public class PeopleController {
     @GetMapping("/{id}")
     public String finById(@PathVariable("id") int id, Model model) {
         model.addAttribute("person", personDAO.findById(id));
+        model.addAttribute("booksOfPerson", personDAO.findBooksOfPerson(id));
         return "people/each";
     }
 
