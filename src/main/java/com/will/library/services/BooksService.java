@@ -48,11 +48,13 @@ public class BooksService {
 
     @Transactional
     public void returnBook(int bookId) {
-
+        booksRepository.returnBook(bookId);
     }
 
     @Transactional
     public void assignBook(int bookId, int personId) {
-
+        Person person = new Person();
+        person.setId(personId);
+        booksRepository.assignBook(bookId, person);
     }
 }
