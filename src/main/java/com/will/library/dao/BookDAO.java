@@ -2,54 +2,78 @@ package com.will.library.dao;
 
 import com.will.library.models.Book;
 import com.will.library.models.Person;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
+@Transactional(readOnly = true)
 public class BookDAO {
-    private final JdbcTemplate jdbcTemplate;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public BookDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public BookDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     public List<Book> findAll() {
-        return jdbcTemplate.query("SELECT * FROM Book", new BookMapper());
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("SELECT b FROM Book b", Book.class).getResultList();
     }
 
     public Book findById(int id) {
-        return jdbcTemplate.query("SELECT * FROM Book WHERE id = ?",
-                new Object[]{id}, new BookMapper()).stream().findAny().orElse(null);
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Book.class, id);
     }
 
+    @Transactional
     public void update(Book updatedBook) {
-        jdbcTemplate.update("UPDATE Book SET title = ?, author = ?, year = ? WHERE id = ?",
-                updatedBook.getTitle(), updatedBook.getAuthor(), updatedBook.getYear(), updatedBook.getId());
+        Session session = sessionFactory.getCurrentSession();
+        Book book = session.get(Book.class, updatedBook.getId());
+        book.setTitle(updatedBook.getTitle());
+        book.setAuthor(updatedBook.getAuthor());
+        book.setYear(updatedBook.getYear());
     }
 
+    @Transactional
     public void delete(int id) {
-        jdbcTemplate.update("DELETE FROM Book WHERE id = ?", id);
+        Session session = sessionFactory.getCurrentSession();
+        Book book = new Book();
+        book.setId(id);
+        session.remove(book);
     }
 
+    @Transactional
     public void save(Book book) {
-        jdbcTemplate.update("INSERT INTO Book(title, author, year) VALUES (?, ?, ?)",
-                book.getTitle(), book.getAuthor(), book.getYear());
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(book);
     }
 
     public Person findOwnerOfBook(int bookId) {
-        return jdbcTemplate.query("SELECT Person.id, Person.fullName, Person.yearOfBirth FROM Book JOIN Person ON Person.id = Book.person_id WHERE Book.id = ?",
-                new Object[]{bookId}, new PersonMapper()).stream().findAny().orElse(null);
+        Session session = sessionFactory.getCurrentSession();
+        Book book = session.get(Book.class, bookId);
+        Hibernate.initialize(book.getOwner());
+        return book.getOwner();
     }
 
+    @Transactional
     public void returnBook(int bookId) {
-        jdbcTemplate.update("UPDATE Book SET person_id = NULL WHERE id = ?", bookId);
+        Session session = sessionFactory.getCurrentSession();
+        Book book = session.get(Book.class, bookId);
+        book.setOwner(null);
     }
 
+    @Transactional
     public void assignBook(int bookId, int personId) {
-        jdbcTemplate.update("UPDATE Book SET person_id = ? WHERE id = ?", personId, bookId);
+        Session session = sessionFactory.getCurrentSession();
+        Book book = session.get(Book.class, bookId);
+        Person person = new Person();
+        person.setId(personId);
+        book.setOwner(person);
     }
 }

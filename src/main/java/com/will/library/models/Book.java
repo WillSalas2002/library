@@ -1,10 +1,32 @@
 package com.will.library.models;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
+
+
+@Entity
+@Table(name = "Book")
 public class Book {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotEmpty(message = "Name should not be empty")
+    @Size(min = 1, message = "The title should be provided")
+    @Column(name = "title")
     private String title;
+    @NotEmpty(message = "Name should not be empty")
+    @Size(min = 1, message = "The author name should be provided")
+    @Column(name = "author")
     private String author;
+    @Max(value = 2024, message = "Invalid year")
+    @Column(name = "year")
     private int year;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person owner;
 
     public Book() {

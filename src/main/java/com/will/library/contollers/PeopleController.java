@@ -1,14 +1,13 @@
 package com.will.library.contollers;
 
 import com.will.library.dao.PersonDAO;
-import com.will.library.models.Book;
 import com.will.library.models.Person;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/people")
@@ -33,7 +32,10 @@ public class PeopleController {
     }
 
     @PostMapping()
-    public String save(@ModelAttribute Person person) {
+    public String save(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "redirect:/people/new";
+        }
         personDAO.save(person);
         return "redirect:/people";
     }
@@ -52,7 +54,10 @@ public class PeopleController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("person")Person person) {
+    public String update(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "redirect:people/edit";
+        }
         personDAO.update(person);
         return "redirect:/people";
     }

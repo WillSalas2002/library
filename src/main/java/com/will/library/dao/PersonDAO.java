@@ -2,46 +2,63 @@ package com.will.library.dao;
 
 import com.will.library.models.Book;
 import com.will.library.models.Person;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
+@Transactional(readOnly = true)
 public class PersonDAO {
-    private final JdbcTemplate jdbcTemplate;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public PersonDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public PersonDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     public List<Person> findAll() {
-        return jdbcTemplate.query("SELECT * FROM Person", new PersonMapper());
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("SELECT p FROM Person p", Person.class).getResultList();
     }
 
     public Person findById(int id) {
-        return jdbcTemplate.query("SELECT * FROM Person WHERE id = ?",
-                new Object[]{id}, new PersonMapper()).stream().findAny().orElse(null);
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Person.class, id);
     }
 
+    @Transactional
     public void update(Person updatedPerson) {
-        jdbcTemplate.update("UPDATE Person SET fullName = ?, yearOfBirth = ? WHERE id = ?",
-                updatedPerson.getFullName(), updatedPerson.getYearOfBirth(), updatedPerson.getId());
+        Session session = sessionFactory.getCurrentSession();
+        Person person = session.get(Person.class, updatedPerson.getId());
+        person.setFullName(updatedPerson.getFullName());
+        updatedPerson.setYearOfBirth(updatedPerson.getYearOfBirth());
     }
 
+    @Transactional
     public void delete(int id) {
-        jdbcTemplate.update("DELETE FROM Person WHERE id = ?", id);
+        Session session = sessionFactory.getCurrentSession();
+        Person person = new Person();
+        person.setId(id);
+        session.remove(person);
     }
 
+    @Transactional
     public void save(Person person) {
-        jdbcTemplate.update("INSERT INTO Person(fullName, yearOfBirth) VALUES (?, ?)",
-                person.getFullName(), person.getYearOfBirth());
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(person);
     }
 
     public List<Book> findBooksOfPerson(int personId) {
-        return jdbcTemplate.query("SELECT Book.id, Book.title, Book.author, Book.year FROM Person JOIN Book ON Person.id = Book.person_id WHERE Person.id = ?",
-                new Object[]{personId}, new BookMapper());
+        // TODO: We can return a person with his books associated for some optimization
+        Session session = sessionFactory.getCurrentSession();
+        Person person = session.get(Person.class, personId);
+        List<Book> books = person.getBooks();
+        Hibernate.initialize(books);
+        return books;
     }
 }

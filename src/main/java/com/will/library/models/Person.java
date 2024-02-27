@@ -1,11 +1,26 @@
 package com.will.library.models;
 
+import jakarta.validation.constraints.*;
+
+import jakarta.persistence.*;
 import java.util.List;
 
+@Entity
+@Table(name = "Person")
 public class Person {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotEmpty(message = "Name should not be empty")
+    @Size(min = 2, message = "The name should be provided and  it should consist of 2 letters at least")
+    @Column(name = "fullName")
     private String fullName;
+    @Min(value = 1920, message = "Invalid year, the year should be between 1920 and 2020")
+    @Max(value = 2020, message = "Invalid year, the year should be between 1920 and 2020")
+    @Column(name = "yearOfBirth")
     private int yearOfBirth;
+    @OneToMany(mappedBy = "owner")
     private List<Book> books;
 
     public Person() {
