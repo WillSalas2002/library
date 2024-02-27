@@ -20,7 +20,7 @@ public class Person {
     @Max(value = 2020, message = "Invalid year, the year should be between 1920 and 2020")
     @Column(name = "yearOfBirth")
     private int yearOfBirth;
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Book> books;
 
     public Person() {

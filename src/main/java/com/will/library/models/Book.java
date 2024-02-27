@@ -25,7 +25,7 @@ public class Book {
     @Max(value = 2024, message = "Invalid year")
     @Column(name = "year")
     private int year;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person owner;
 
