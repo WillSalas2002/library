@@ -7,7 +7,6 @@
 <body>
     <h1>Personal Page</h1>
     <p th:text="${person.getFullName()} + ', ' + ${person.getYearOfBirth()}"></p>
-    <a th:href="@{/people/{id}/edit(id=${person.getId()})}" th:text="Edit"></a>
     <br/>
     <div th:if="${booksOfPerson != null && booksOfPerson.size() > 0}">
         <p>Books of the Person:</p>
@@ -18,6 +17,8 @@
     <div th:if="${booksOfPerson == null || booksOfPerson.size() == 0}">
         <p>Person Doesn't have any books</p>
     </div>
+    <hr/>
+    <a th:href="@{/people/{id}/edit(id=${person.getId()})}" th:text="Edit"></a>
     <br/>
     <form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">
         <input type="submit" value="Delete"/>

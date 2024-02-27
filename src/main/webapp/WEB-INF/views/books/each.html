@@ -7,7 +7,6 @@
 <body>
     <h1>Personal Page</h1>
     <p th:text="${book.getTitle()} + ', ' + ${book.getAuthor()}"></p>
-    <a th:href="@{/books/{id}/edit(id=${book.getId()})}" th:text="Edit"></a>
     <br/>
     <div th:if="${ownerOfBook}">
         <p th:text="'The owner is: ' + ${ownerOfBook.fullName} + ', ' + ${ownerOfBook.yearOfBirth}"></p>
@@ -25,6 +24,8 @@
             <input type="submit" value="Assign"/>
         </form>
     </div>
+    <hr/>
+    <a th:href="@{/books/{id}/edit(id=${book.getId()})}" th:text="Edit"></a>
     <br/>
     <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getId()})}">
         <input type="submit" value="Delete"/>

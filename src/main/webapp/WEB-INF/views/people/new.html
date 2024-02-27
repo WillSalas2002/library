@@ -8,10 +8,12 @@
 <h1>Creation Page</h1>
 <form th:method="POST" th:action="@{/people}" th:object="${person}">
     <label for="full_name">Enter Name: </label>
-    <input type="text" id="full_name" th:field="${person.fullName}">
+    <input type="text" id="full_name" th:field="*{fullName}">
+    <div style="color: red" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Name error</div>
     <br/>
     <label for="year_of_birth">Enter year of birth: </label>
-    <input type="number" id="year_of_birth" th:field="${person.yearOfBirth}">
+    <input type="number" id="year_of_birth" th:field="*{yearOfBirth}">
+    <div style="color: red" th:if="${#fields.hasErrors('yearOfBirth')}" th:errors="*{yearOfBirth}">Name error</div>
     <br/>
     <input type="submit" value="Save"/>
 </form>
