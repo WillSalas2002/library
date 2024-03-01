@@ -14,11 +14,11 @@ public class Person {
     private int id;
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, message = "The name should be provided and  it should consist of 2 letters at least")
-    @Column(name = "fullName")
+    @Column(name = "full_name")
     private String fullName;
     @Min(value = 1920, message = "Invalid year, the year should be between 1920 and 2020")
     @Max(value = 2020, message = "Invalid year, the year should be between 1920 and 2020")
-    @Column(name = "yearOfBirth")
+    @Column(name = "year_of_birth")
     private int yearOfBirth;
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Book> books;

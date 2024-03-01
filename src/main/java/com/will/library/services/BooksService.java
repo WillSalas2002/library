@@ -3,7 +3,10 @@ package com.will.library.services;
 import com.will.library.models.Book;
 import com.will.library.models.Person;
 import com.will.library.repositories.BooksRepository;
+import com.will.library.repositories.PeopleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +16,25 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class BooksService {
     private final BooksRepository booksRepository;
+    private final PeopleRepository peopleRepository;
 
     @Autowired
-    public BooksService(BooksRepository booksRepository) {
+    public BooksService(BooksRepository booksRepository, PeopleRepository peopleRepository) {
         this.booksRepository = booksRepository;
+        this.peopleRepository = peopleRepository;
     }
 
     public List<Book> findAll() {
         return booksRepository.findAll();
+    }
+    public List<Book> findAll(String sort) {
+        return booksRepository.findAll(Sort.by(sort));
+    }
+    public List<Book> findAll(int page, int itemsPerPage) {
+        return booksRepository.findAll(PageRequest.of(page, itemsPerPage)).getContent();
+    }
+    public List<Book> findAll(int page, int itemsPerPage, String sort) {
+        return booksRepository.findAll(PageRequest.of(page, itemsPerPage, Sort.by(sort))).getContent();
     }
 
     public Book findById(int id) {
@@ -29,6 +43,7 @@ public class BooksService {
 
     @Transactional
     public void update(Book updatedBook) {
+        updatedBook.setOwner(findOwnerOfBook(updatedBook.getId()));
         booksRepository.save(updatedBook);
     }
 
@@ -48,13 +63,24 @@ public class BooksService {
 
     @Transactional
     public void returnBook(int bookId) {
-        booksRepository.returnBook(bookId);
+        Book book = findById(bookId);
+        book.setOwner(null);
     }
 
     @Transactional
     public void assignBook(int bookId, int personId) {
         Person person = new Person();
         person.setId(personId);
-        booksRepository.assignBook(bookId, person);
+        Book book = findById(bookId);
+        book.setOwner(person);
+        booksRepository.save(book);
+    }
+
+    public List<Book> search(String bookName) {
+        return booksRepository.findBookByTitleStartingWith(bookName);
+    }
+
+    public List<Person> findAllPeople() {
+        return peopleRepository.findAll();
     }
 }

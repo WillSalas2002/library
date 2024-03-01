@@ -19,8 +19,19 @@ public class BooksController {
     }
 
     @GetMapping()
-    public String findAllPeople(Model model) {
-        model.addAttribute("books", booksService.findAll());
+    public String findAllPeople(@RequestParam(name = "sort_by_year", required = false) String sort,
+                                @RequestParam(name = "page", required = false) String page,
+                                @RequestParam(name = "books_per_page", required = false) String itemsPerPage,
+                                Model model) {
+        if (page != null && itemsPerPage != null && sort != null) {
+            model.addAttribute("books", booksService.findAll(Integer.parseInt(page), Integer.parseInt(itemsPerPage), sort));
+        } else if (page != null && itemsPerPage != null) {
+            model.addAttribute("books", booksService.findAll(Integer.parseInt(page), Integer.parseInt(itemsPerPage)));
+        } else if (sort != null && sort.equals("true")) {
+            model.addAttribute("books", booksService.findAll("year"));
+        } else {
+            model.addAttribute("books", booksService.findAll());
+        }
         return "books/index";
     }
 
@@ -42,11 +53,13 @@ public class BooksController {
     }
 
     @GetMapping("/{id}")
-    public String finById(@PathVariable("id") int id, Model model,
+    public String findById(@PathVariable("id") int id, Model model,
                           @ModelAttribute("modelPerson") Person person) {
-        model.addAttribute("book", booksService.findById(id));
+        Book book = booksService.findById(id);
+        System.out.println("Inside getMapping()" + book.getOwner());
+        model.addAttribute("book", book);
         model.addAttribute("ownerOfBook", booksService.findOwnerOfBook(id));
-        model.addAttribute("people", booksService.findAll());
+        model.addAttribute("people", booksService.findAllPeople());
         return "books/each";
     }
 
@@ -69,8 +82,15 @@ public class BooksController {
     }
 
     @PatchMapping("/assign/{id}")
-    public String assignBook(@PathVariable("id") int bookId, @ModelAttribute("modelPerson") Person person) {
+    public String assignBook(@PathVariable("id") int bookId,
+                             @ModelAttribute("modelPerson") Person person) {
         booksService.assignBook(bookId, person.getId());
         return "redirect:/books";
+    }
+
+    @GetMapping("/search")
+    public String search(@RequestParam(name = "book-name", required = false) String bookName, Model model) {
+        model.addAttribute("books", booksService.search(bookName));
+        return "books/search";
     }
 }
