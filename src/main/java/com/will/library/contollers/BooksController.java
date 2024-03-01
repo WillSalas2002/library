@@ -3,9 +3,11 @@ package com.will.library.contollers;
 import com.will.library.models.Book;
 import com.will.library.models.Person;
 import com.will.library.services.BooksService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -41,7 +43,10 @@ public class BooksController {
     }
 
     @PostMapping()
-    public String save(@ModelAttribute Book book) {
+    public String save(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "books/new";
+        }
         booksService.save(book);
         return "redirect:/books";
     }
@@ -64,7 +69,10 @@ public class BooksController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("book")Book book) {
+    public String update(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "books/edit";
+        }
         booksService.update(book);
         return "redirect:/books";
     }

@@ -34,7 +34,7 @@ public class PeopleController {
     @PostMapping()
     public String save(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "redirect:/people/new";
+            return "people/new";
         }
         peopleService.save(person);
         return "redirect:/people";
@@ -56,7 +56,7 @@ public class PeopleController {
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "redirect:people/edit";
+            return "people/edit";
         }
         peopleService.update(person);
         return "redirect:/people";

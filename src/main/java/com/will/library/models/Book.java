@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-
 
 @Entity
 @Table(name = "Book")
@@ -30,11 +28,9 @@ public class Book {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person owner;
-
     @Column(name = "taken_at")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime takenAt;
-
     @Transient
     private boolean isExpired;
 
