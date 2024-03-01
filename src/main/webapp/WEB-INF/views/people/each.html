@@ -11,7 +11,8 @@
     <div th:if="${booksOfPerson != null && booksOfPerson.size() > 0}">
         <p>Books of the Person:</p>
         <ul th:each="book: ${booksOfPerson}">
-            <li th:text="${book.getTitle()} + ', ' + ${book.getAuthor()}"></li>
+            <li th:if="${book.isExpired()}" style="color: deepskyblue" th:text="${book.getTitle()} + ', ' + ${book.getAuthor()}"></li>
+            <li th:unless="${book.isExpired()}" th:text="${book.getTitle()} + ', ' + ${book.getAuthor()}"></li>
         </ul>
     </div>
     <div th:if="${booksOfPerson == null || booksOfPerson.size() == 0}">

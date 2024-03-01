@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -39,11 +42,25 @@ public class PeopleService {
 
     @Transactional
     public void delete(int id) {
+        List<Book> booksOfPerson = findBooksOfPerson(id);
+        if (booksOfPerson != null) {
+            for (Book book : booksOfPerson) {
+                book.setTakenAt(null);
+            }
+        }
         peopleRepository.deleteById(id);
     }
 
-    @Transactional
     public List<Book> findBooksOfPerson(int personId) {
-        return findById(personId).getBooks();
+        List<Book> books = findById(personId).getBooks();
+        for (Book book : books) {
+            LocalDateTime takenAt = book.getTakenAt();
+            LocalDateTime now = LocalDateTime.now();
+            long diff = ChronoUnit.DAYS.between(takenAt, now);
+            if (diff > 2) {
+                book.setExpired(true);
+            }
+        }
+        return books;
     }
 }

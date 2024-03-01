@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -44,6 +46,7 @@ public class BooksService {
     @Transactional
     public void update(Book updatedBook) {
         updatedBook.setOwner(findOwnerOfBook(updatedBook.getId()));
+        updatedBook.setTakenAt(findById(updatedBook.getId()).getTakenAt());
         booksRepository.save(updatedBook);
     }
 
@@ -64,6 +67,7 @@ public class BooksService {
     @Transactional
     public void returnBook(int bookId) {
         Book book = findById(bookId);
+        book.setTakenAt(null);
         book.setOwner(null);
     }
 
@@ -73,6 +77,7 @@ public class BooksService {
         person.setId(personId);
         Book book = findById(bookId);
         book.setOwner(person);
+        book.setTakenAt(LocalDateTime.now());
         booksRepository.save(book);
     }
 

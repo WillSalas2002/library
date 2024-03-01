@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Entity
@@ -28,6 +30,13 @@ public class Book {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person owner;
+
+    @Column(name = "taken_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime takenAt;
+
+    @Transient
+    private boolean isExpired;
 
     public Book() {
     }
@@ -81,5 +90,21 @@ public class Book {
 
     public void setOwner(Person owner) {
         this.owner = owner;
+    }
+
+    public LocalDateTime getTakenAt() {
+        return takenAt;
+    }
+
+    public void setTakenAt(LocalDateTime takenAt) {
+        this.takenAt = takenAt;
+    }
+
+    public boolean isExpired() {
+        return isExpired;
+    }
+
+    public void setExpired(boolean expired) {
+        isExpired = expired;
     }
 }
